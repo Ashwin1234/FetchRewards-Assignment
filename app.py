@@ -6,10 +6,16 @@ from transaction import Transaction
 app = Flask(__name__)
 app.run(debug=True)
 
-transactions = []
 
+## global declarations
+transactions = []
 spend = OrderedDict()
 dict = OrderedDict()
+
+
+## API to add in new transactions
+## return a statement telling that transactions have been added
+
 @app.route("/add_transaction",methods = ['GET','POST'])
 def add_transaction():
     if request.method == 'POST':
@@ -19,35 +25,41 @@ def add_transaction():
             transactions.append(Transaction(ele['payer'],ele['points'],ele['timestamp']))
         print(transactions)
     return "added transaction"
+
+## API endpoint to calculate the points spent by each payer according to the rules defined in the transactions
+## returns a JSON response with each payer and the points spent by them
     
 @app.route("/spend_points",methods = ['GET','POST'])
 def spend_points():
     if request.method == 'POST':
         data = request.get_json()
         points = data['points']
-        spend = OrderedDict()
         dict2 = OrderedDict()
         translist = []
-        #for trans in transactions:
-            #translist.append([trans.payer,trans.points,trans.timestamp])
+        output = []
+        
+
         translist = sorted(transactions,key = lambda x:x.timestamp)
+
+
         for trans in translist:
-            if trans.player in dict1:
+            if trans.payer in dict2:
                 continue
             else:
-                spend[trans.player] = 0
-                dict2[trans.player] = 0
+                spend[trans.payer] = 0
+                dict2[trans.payer] = 0
+        
         for ele in translist:
             if points == 0:
                 break
-            if ele.points < 0 or dict2[ele.player] + ele.points < 0:
-                dict2[ele.player] = dict2[ele.player] + ele.points
+            if ele.points < 0 or dict2[ele.payer] + ele.points < 0:
+                dict2[ele.payer] = dict2[ele.payer] + ele.points
             else:
-                if points > dict2[ele.player] + ele.points:
-                    points = points - (dict2[ele.player] + ele.points)
-                    spend[ele.player] = spend[ele.player] - (dict2[ele.player] + ele.points)
+                if points > dict2[ele.payer] + ele.points:
+                    points = points - (dict2[ele.payer] + ele.points)
+                    spend[ele.payer] = spend[ele.payer] - (dict2[ele.payer] + ele.points)
                 else:
-                    spend[ele.player] = spend[ele.player] - points
+                    spend[ele.payer] = spend[ele.payer] - points
                     points = 0
             
 
@@ -57,18 +69,28 @@ def spend_points():
             else:
                 dict[trans.payer] = trans.points
         
-    return json.dumps(spend)
+        for key,value in spend.items():
+            output.append({
+                'payer' : key,
+                'points' : value
+            })
+        
+    return json.dumps(output)
+
+## API endpoint to calculate the balance of each payer
+## returns a JSON response which contains the balance of each payer 
 
 @app.route("/point_balances",methods = ['GET'])
 def point_balances():
-    dict = OrderedDict()
     resultdict = OrderedDict()
-
+    print(dict)
+    print(spend)
     for key,value in dict.items():
         resultdict[key] = value + spend[key]
         
     return json.dumps(resultdict)
 
+## Default route
 @app.route("/")
 def home():
     return "Hello, Flask!"
