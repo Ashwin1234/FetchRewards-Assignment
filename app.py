@@ -10,7 +10,7 @@ app.run(debug=True)
 ## global declarations
 transactions = []
 spend = OrderedDict()
-dict = OrderedDict()
+dict1 = OrderedDict()
 
 
 ## API to add in new transactions
@@ -20,10 +20,14 @@ dict = OrderedDict()
 def add_transaction():
     if request.method == 'POST':
         data = request.get_json()
-        for ele in data:
-
-            transactions.append(Transaction(ele['payer'],ele['points'],ele['timestamp']))
+        if isinstance(data,list):
+            for ele in data:
+                transactions.append(Transaction(ele['payer'],ele['points'],ele['timestamp']))
+            
+        elif isinstance(data, dict):
+            transactions.append(Transaction(data['payer'],data['points'],data['timestamp']))
         print(transactions)
+
     return "added transaction"
 
 ## API endpoint to calculate the points spent by each payer according to the rules defined in the transactions
@@ -64,10 +68,10 @@ def spend_points():
             
 
         for trans in translist:
-            if trans.payer in dict:
-                dict[trans.payer] = dict[trans.payer] + trans.points
+            if trans.payer in dict1:
+                dict1[trans.payer] = dict1[trans.payer] + trans.points
             else:
-                dict[trans.payer] = trans.points
+                dict1[trans.payer] = trans.points
         
         for key,value in spend.items():
             output.append({
@@ -83,11 +87,15 @@ def spend_points():
 @app.route("/point_balances",methods = ['GET'])
 def point_balances():
     resultdict = OrderedDict()
-    print(dict)
-    print(spend)
-    for key,value in dict.items():
+    print(transactions)
+    for trans in transactions:
+        if trans.payer in resultdict:
+            continue
+        else:
+            resultdict[trans.payer] = trans.points
+ 
+    for key,value in dict1.items():
         resultdict[key] = value + spend[key]
-        
     return json.dumps(resultdict)
 
 ## Default route

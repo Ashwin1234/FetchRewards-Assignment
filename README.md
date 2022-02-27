@@ -3,7 +3,7 @@ This is a take home assignment for FetchRewards. <br>
 Framework used : <br>
 Python3, Flask
 
-## Problem statement : <br> 
+## Problem statement : <br>
 Provide routes that: <br>
 Add transactions for a specific payer and date. <br>
 Spend points using the rules above and return a list of ​{ "payer": <string>, "points": <integer> }​ for each call. <br>
@@ -11,9 +11,14 @@ Return all payer point balances. <br>
 
 ## Installations
 ## Steps to install python3 in MAC OS
+### steps to install homebrew: <br>
+open terminal and run ``` $ /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)" ```
+Add the following line at the bottom of your ``` ~.profile ``` file <br>
+``` export PATH="/usr/local/opt/python/libexec/bin:$PATH" ``` <br>
+
  ```  $ brew install python ```
  By default pip is installed. 
- To check python version run ``` $ python3 ```
+ To check python version run ``` $ python3 ``` 
 
  ## Steps to install python3 in windows
  Download python from [link](https://www.python.org/downloads/)
@@ -34,7 +39,7 @@ Return all payer point balances. <br>
  ## API Documentation
  The endpoint - http://127.0.0.1:5000/add_transaction is a POST request which expects a set of transactions. This API stores them in a local variable. <br>
  result <br>
- ![](./image3.png)
+ ![](./image1.png)
  <br>
  <br>
 
@@ -47,7 +52,7 @@ result <br>
 
  The endpoint - http://127.0.0.1:5000/point_balances is a GET request which returns a JSON response with the total balance available for each user. <br>
  result <br>
- ![](./image1.png)
+ ![](./image3.png)
 
 
 
