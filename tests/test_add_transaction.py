@@ -1,7 +1,7 @@
 import json
 
 
-def test_index(app, client):
+def test_index(client):
     res = client.get('/add_transaction')
     assert res.status_code == 200
     expected = "added transactions"
