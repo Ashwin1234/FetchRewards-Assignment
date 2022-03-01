@@ -1,3 +1,4 @@
+import mimetypes
 from typing import OrderedDict
 from flask import Flask
 from flask import request
@@ -10,10 +11,10 @@ app.run(debug=True)
 
 ## global declarations
 transactions = []
-spend = OrderedDict()
+spend_dictionary = OrderedDict()
 dict1 = OrderedDict()
 dict2 = OrderedDict()
-resultdict = OrderedDict()
+balance_dictionary = OrderedDict()
 
 
 
@@ -30,15 +31,17 @@ def add_transaction():
             
         elif isinstance(data, dict):
             transactions.append(Transaction(data['payer'],data['points'],data['timestamp']))
-        print(transactions)
     
+    # initializing the result dictionary
     for trans in transactions:
-        if trans.payer in resultdict:
+        if trans.payer in balance_dictionary:
             continue
         else:
-            resultdict[trans.payer] = trans.points
+            balance_dictionary[trans.payer] = trans.points
 
-    return "added transaction"
+    return Response (
+        'added transaction', status = 200, mimetype = 'application/json'
+    )
 
 ## API endpoint to calculate the points spent by each payer according to the rules defined in the transactions
 ## returns a JSON response with each payer and the points spent by them
@@ -56,9 +59,10 @@ def spend_points():
 
         translist = sorted(transactions,key = lambda x:x.timestamp)
 
-        for key,value in resultdict.items():
+        for key,value in balance_dictionary.items():
             total_points = total_points + value
         
+        # checking for edge cases in the input
         if total_points < points:
             return Response(
                 "Insufficient balance", status = 400, mimetype = 'application/json'
@@ -74,8 +78,9 @@ def spend_points():
                 "Points cannot be negative", status = 400, mimetype = 'application/json'
             )
         
+        # initializing the spend dictionary
         for trans in translist:
-            spend[trans.payer] = 0
+            spend_dictionary[trans.payer] = 0
             dict2[trans.payer] = 0
 
         
@@ -87,42 +92,47 @@ def spend_points():
             else:
                 if points > dict2[ele.payer] + ele.points:
                     points = points - (dict2[ele.payer] + ele.points)
-                    spend[ele.payer] = spend[ele.payer] - (dict2[ele.payer] + ele.points)
+                    spend_dictionary[ele.payer] = spend_dictionary[ele.payer] - (dict2[ele.payer] + ele.points)
                     dict2[ele.payer] = 0
                 else:
-                    spend[ele.payer] = spend[ele.payer] - points
+                    spend_dictionary[ele.payer] = spend_dictionary[ele.payer] - points
                     points = 0
 
 
-        for trans in translist:
-            if trans.payer in dict1:
-                dict1[trans.payer] = dict1[trans.payer] + trans.points
-            else:
-                dict1[trans.payer] = trans.points
+        #for trans in translist:
+            #if trans.payer in dict1:
+                #dict1[trans.payer] = dict1[trans.payer] + trans.points
+            #else:
+                #dict1[trans.payer] = trans.points
         
 
         
-        for key,value in spend.items():
+        for key,value in spend_dictionary.items():
             output.append({
                 'payer' : key,
                 'points' : value
             })
-        for key,value in resultdict.items():
-            resultdict[key] = value + spend[key]
         
-    return json.dumps(output)
+        # Calculating the remaining balance
+        for key,value in balance_dictionary.items():
+            balance_dictionary[key] = value + spend_dictionary[key]
+        
+    return Response(
+        json.dumps(output), status = 200, mimetype = 'application/json'
+    )
 
 ## API endpoint to calculate the balance of each payer
 ## returns a JSON response which contains the balance of each payer 
 
 @app.route("/point_balances",methods = ['GET'])
 def point_balances():
-    
-    print(transactions)
-
-    return json.dumps(resultdict)
+    return Response(
+        json.dumps(balance_dictionary), status = 200, mimetype = 'application/json'
+    )
 
 ## Default route
 @app.route("/")
 def home():
-    return "Hello, Flask!"
+    return Response(
+        "default route", status = 200, mimetype = 'application/json'
+    )

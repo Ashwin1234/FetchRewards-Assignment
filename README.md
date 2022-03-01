@@ -39,25 +39,25 @@ Add the following line at the bottom of your ``` ~.profile ``` file <br>
  ## API Documentation
  The endpoint - http://127.0.0.1:5000/add_transaction is a POST request which expects a set of transactions. This API stores them in a local variable. <br>
  result <br>
- ![](./image1.png)
+ ![](./images/image7.png)
  <br>
  <br>
 
  The endpoint - http://127.0.0.1:5000/spend_points is a POST request which expects total points to be spent. The is API computes the points spent by each buyer. The logic here is that oldest transaction by timestamp is used to deduct the points and points are only reduced if they are positive. Returns a JSON response with each payer and the points deducted from their account. <br>
 result <br>
- ![](./image2.png)
+ ![](./images/image5.png)
  <br>
  <br>
 
 
  The endpoint - http://127.0.0.1:5000/point_balances is a GET request which returns a JSON response with the total balance available for each user. <br>
  result <br>
- ![](./image3.png)
+ ![](./images/image6.png)
 
  ## Testing
- There are 4 test cases overall <br>
+ There are 5 test cases overall <br>
  To run the test cases run   ``` python3 test_app.py ```
-
+![](./images/image4.png)
 
 
 
