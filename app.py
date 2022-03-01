@@ -75,11 +75,8 @@ def spend_points():
             )
         
         for trans in translist:
-            if trans.payer in dict2:
-                continue
-            else:
-                spend[trans.payer] = 0
-                dict2[trans.payer] = 0
+            spend[trans.payer] = 0
+            dict2[trans.payer] = 0
 
         
         for ele in translist:
@@ -110,6 +107,8 @@ def spend_points():
                 'payer' : key,
                 'points' : value
             })
+        for key,value in resultdict.items():
+            resultdict[key] = value + spend[key]
         
     return json.dumps(output)
 
@@ -121,10 +120,6 @@ def point_balances():
     
     print(transactions)
 
-
-
-    for key,value in resultdict.items():
-        resultdict[key] = value + spend[key]
     return json.dumps(resultdict)
 
 ## Default route

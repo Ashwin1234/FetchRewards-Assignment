@@ -54,6 +54,10 @@ result <br>
  result <br>
  ![](./image3.png)
 
+ ## Testing
+ There are 4 test cases overall <br>
+ To run the test cases run   ``` python3 test_app.py ```
+
 
 
 
