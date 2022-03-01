@@ -74,7 +74,7 @@ class AppTestCase(unittest.TestCase):
         res = self.app.post('/spend_points',data = json.dumps(data),headers = headers)
         assert res.status_code == 200
 
-    # Test case 1 for checking remaining balance
+    # Test case 1 for checking remaining balances
     def test_point_balances(self):
         res = self.app.get('/point_balances')
         assert res.status_code == 200
