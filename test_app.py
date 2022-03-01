@@ -61,7 +61,7 @@ class AppTestCase(unittest.TestCase):
         
 
 
-    # Test case 2 for checking spend balances
+    # Test case 2 for checking spend balance
     def test_spend_balance2(self):
         mimetype = 'application/json'
         headers = {
